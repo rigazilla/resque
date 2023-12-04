@@ -3,6 +3,7 @@
 #
 
 load 'lib/tasks/redis.rake'
+load 'lib/tasks/infinispan.rake'
 
 $LOAD_PATH.unshift 'lib'
 require 'resque/tasks'

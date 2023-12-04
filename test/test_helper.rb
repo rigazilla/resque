@@ -34,7 +34,7 @@ end
 #
 
 Minitest.after_run do
-  if Process.pid == $TEST_PID
+  if !(ENV.key? 'RESQUE_INFINISPAN') && Process.pid == $TEST_PID
     processes = `ps -A -o pid,command | grep [r]edis-test`.split("\n")
     pids = processes.map { |process| process.split(" ")[0] }
     puts "Killing test redis server..."
@@ -69,10 +69,13 @@ if ENV.key? 'RESQUE_DISTRIBUTED'
   `redis-server #{$dir}/redis-test-cluster.conf`
   r = Redis::Distributed.new(['redis://localhost:9736', 'redis://localhost:9737'])
   Resque.redis = Redis::Namespace.new :resque, :redis => r
-else
-  puts "Starting redis for testing at localhost:9736..."
-  `redis-server #{$dir}/redis-test.conf`
-  Resque.redis = 'localhost:9736'
+else if ENV.key? 'RESQUE_INFINISPAN'
+        Resque.redis = 'localhost:6379'
+     else
+        puts "Starting redis for testing at localhost:9736..."
+        `redis-server #{$dir}/redis-test.conf`
+        Resque.redis = 'localhost:9736'
+     end
 end
 
 ##

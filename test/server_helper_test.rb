@@ -71,7 +71,8 @@ describe 'Resque::ServerHelper' do
       it 'returns an array of 20 elements counting from `start`' do
         Resque.redis.hset('hash','f1', 'v1')
         Resque.redis.hset('hash','f2', 'v2')
-        assert_equal [['f1', 'v1'], ['f2', 'v2']], redis_get_value_as_array('hash')
+        assert( ([['f2', 'v2'], ['f1', 'v1']] == redis_get_value_as_array('hash') or
+                 [['f1', 'v1'], ['f2', 'v2']] == redis_get_value_as_array('hash')) )
       end
     end
 
